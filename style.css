@@ -35,13 +35,12 @@ body {
     -webkit-justify-content: center;
     -ms-flex-pack: center;
     justify-content: center;
-    background-color: yellow;
     border-right: 1px solid #333;
 }
 .bathroom:last-child {
     border-right: none;
 }
-
 .status {
+    font-family: serif;
     text-align: center;
 }
