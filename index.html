@@ -3,14 +3,52 @@
     <title>Can I Poop?</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css" />
     <link rel="stylesheet" href="./style.css" />
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="https://gstatic.com/firebasejs/3.5.2/firebase.js"></script>
 </head>
 <body>
-    <div class="office">
-        <div class="bathroom">
-            <span class="status">Maybe</span>
-        </div>
-        <div class="bathroom">
-            <span class="status">Maybe</span>
-        </div>
+    <div id="office" class="office">
+        <div class="bathroom" v-bind:class="{ isOpen: is1Open, isClosed: !is1Open }"></div>
+        <div class="bathroom" v-bind:class="{ isOpen: is2Open, isClosed: !is2Open }"></div>
     </div>
+
+    <script>
+        var firebaseApp = firebase.initializeApp({
+            "databaseURL": "https://canipoop-4efd0.firebaseio.com/",
+        })
+
+        var db = firebaseApp.database();
+        var office = db.ref('office');
+
+        var vm = new Vue({
+            el: '#office',
+            data: function() {
+                return {
+                    is1Open: false,
+                    is2Open: false,
+                }
+            },
+            watch: {
+                br1: function() {
+                    this.is1Open = this.br1;
+                },
+                br2: function() {
+                    this.is2Open = this.br2;
+                },
+            },
+            methods: {
+                updateBr1: function(value) {
+                    this.is1Open = value
+                },
+                updateBr2: function(value) {
+                    this.is2Open = value
+                }
+            }
+        });
+
+        office.on('value', function(res) {
+            vm.updateBr1(res.val().br1);
+            vm.updateBr2(res.val().br2);
+        });
+    </script>
 </body>

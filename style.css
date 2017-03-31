@@ -44,3 +44,9 @@ body {
     font-family: serif;
     text-align: center;
 }
+.isOpen {
+    background-color: green;
+}
+.isClosed {
+    background-color: red;
+}
