@@ -8,8 +8,8 @@
 </head>
 <body>
     <div id="office" class="office">
-        <div class="bathroom" v-bind:class="{ isOpen: is1Open, isClosed: !is1Open }"></div>
         <div class="bathroom" v-bind:class="{ isOpen: is2Open, isClosed: !is2Open }"></div>
+        <div class="bathroom" v-bind:class="{ isOpen: is1Open, isClosed: !is1Open }"></div>
     </div>
 
     <script>
