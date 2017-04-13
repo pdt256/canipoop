@@ -21,7 +21,6 @@ void setup() {
   radio.setChannel(0x76);
   radio.openWritingPipe(0xF0F0F0F0E1LL);
   radio.enableDynamicPayloads();
-  radio.powerUp();
 
   getSwitchStatus();
   sendSwitchStatus();
@@ -44,10 +43,13 @@ boolean getSwitchStatus() {
 }
 
 void sendSwitchStatus() {
+  radio.powerUp();
   if (switchStatus == HIGH) {
     radio.write("H", 1);
   } else {
     radio.write("L", 1);
   }
+  radio.powerDown();
+
   lastSwitchStatus = switchStatus;
 }
