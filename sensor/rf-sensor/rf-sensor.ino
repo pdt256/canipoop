@@ -43,13 +43,18 @@ boolean getSwitchStatus() {
 }
 
 void sendSwitchStatus() {
+  boolean sendWasSuccessful;
+  
   radio.powerUp();
   if (switchStatus == HIGH) {
-    radio.write("H", 1);
+    sendWasSuccessful = radio.write("H", 1);
   } else {
-    radio.write("L", 1);
+    sendWasSuccessful = radio.write("L", 1);
   }
   radio.powerDown();
 
-  lastSwitchStatus = switchStatus;
+  if (sendWasSuccessful) {
+    lastSwitchStatus = switchStatus;
+  }
 }
+
