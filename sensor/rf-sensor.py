@@ -1,4 +1,3 @@
-pi@raspberrypi:~/NRF24 $ cat rf-sensor.py
 import RPi.GPIO as GPIO
 from lib_nrf24 import NRF24
 import time
