@@ -21,7 +21,7 @@ last_is_open = 3
 def door_changed(location, is_open):
     print("door changed:", location)
     lastChange = int(time.time())
-    db.child(location).set({ "isOpen": is_open, "lastChange": lastChange, "lastUpdate": lastChange });
+    db.child(location).update({ "isOpen": is_open, "lastChange": lastChange, "lastUpdate": lastChange });
 
 GPIO.setmode(GPIO.BCM)
 
