@@ -1,3 +1,4 @@
+pi@raspberrypi:~/NRF24 $ cat rf-sensor.py
 import RPi.GPIO as GPIO
 from lib_nrf24 import NRF24
 import time
@@ -18,11 +19,25 @@ db = firebase.database()
 last_is_open = 3
 
 def door_changed(location, is_open):
-    print("door changed")
-    db.child(location).set(is_open)
-
+    print("door changed:", location)
+    lastChange = int(time.time())
+    db.child(location).set({ "isOpen": is_open, "lastChange": lastChange, "lastUpdate": lastChange });
 
 GPIO.setmode(GPIO.BCM)
+
+door_pin = 23
+GPIO.setup(door_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)  # activate input with PullUp
+
+
+def pin_callback(channel):
+    is_open = GPIO.input(door_pin)
+    t = threading.Thread(target=door_changed, args=("office1/br1", is_open))
+    t.daemon = True
+    t.start()
+
+
+GPIO.add_event_detect(door_pin, GPIO.BOTH, callback=pin_callback)
+
 
 pipes = [[0xE8, 0xE8, 0xF0, 0xF0, 0XE1], [0xF0, 0xF0, 0xF0, 0xF0, 0xE1]]
 
@@ -57,7 +72,7 @@ while True:
     for n in receivedMessage:
         if (n >= 32 and n <= 126):
             string += chr(n)
-    print("Received: {}".format(string))
+    #print("Received: {}".format(string))
 
 
     if string == "H":
@@ -69,6 +84,6 @@ while True:
 
     if is_open != last_is_open:
         last_is_open = is_open
-        t = threading.Thread(target=door_changed, args=("office/br2", is_open))
+        t = threading.Thread(target=door_changed, args=("office1/br2", is_open))
         t.daemon = True
         t.start()

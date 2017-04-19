@@ -10,40 +10,49 @@
 </head>
 <body>
     <div id="office" class="office">
-        <div class="bathroom" v-bind:class="{ isOpen: is2Open, isClosed: !is2Open }"></div>
-        <div class="bathroom" v-bind:class="{ isOpen: is1Open, isClosed: !is1Open }"></div>
+        <div class="bathroom" v-bind:class="{ isOpen: is2Open == true, isClosed: is2Open == false }"></div>
+        <div class="bathroom" v-bind:class="{ isOpen: is1Open == true, isClosed: is1Open == false }"></div>
     </div>
 
     <script>
         var firebaseApp = firebase.initializeApp({
             "databaseURL": "https://canipoop-4efd0.firebaseio.com/",
-        })
+        });
 
         var db = firebaseApp.database();
-        var office = db.ref('office');
+        var office = db.ref('office1');
 
         var vm = new Vue({
             el: '#office',
             data: function() {
                 return {
-                    is1Open: false,
-                    is2Open: false,
+                    is1Open: null,
+                    is2Open: null
                 }
             },
             methods: {
-                updateBr1: function(value) {
-                    this.is1Open = value
+                updateBr1: function(door) {
+                    this.is1Open = this.getDoorStatus(door);
                 },
-                updateBr2: function(value) {
-                    this.is2Open = value
+                updateBr2: function(door) {
+                    this.is2Open = this.getDoorStatus(door);
+                },
+                getDoorStatus: function(door) {
+                    var currentTimestamp = new Date() / 1000;
+                    var elapsedTime = currentTimestamp - door.lastUpdate;
+                    if (elapsedTime > 3600) {
+                        return null
+                    } else {
+                        return door.isOpen;
+                    }
                 }
             }
         });
 
-        office.on('value', function(res) {
-            vm.updateBr1(res.val().br1);
-            vm.updateBr2(res.val().br2);
-        });
+         office.on('value', function(res) {
+             vm.updateBr1(res.val().br1);
+             vm.updateBr2(res.val().br2);
+         });
     </script>
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
