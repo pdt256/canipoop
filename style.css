@@ -21,9 +21,9 @@ body {
   text-align: center; }
 
 .isOpen {
-  background-color: green; }
+  background-color: #4ae77e; }
 
 .isClosed {
-  background-color: red; }
+  background-color: #383063; }
 
 /*# sourceMappingURL=style.css.map */
