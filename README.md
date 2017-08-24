@@ -15,4 +15,3 @@ $ sass --watch ./:./
 # NoWatch:
 $ sass style.scss style.css
 ```
-
