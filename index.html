@@ -26,8 +26,8 @@
             el: '#office',
             data: function() {
                 return {
-                    is1Open: null,
-                    is2Open: null
+                    is1Open: false,
+                    is2Open: false
                 }
             },
             methods: {
@@ -40,11 +40,7 @@
                 getDoorStatus: function(door) {
                     var currentTimestamp = new Date() / 1000;
                     var elapsedTime = currentTimestamp - door.lastUpdate;
-                    if (elapsedTime > 3600) {
-                        return null
-                    } else {
-                        return door.isOpen;
-                    }
+                    return door.isOpen ? true : false;
                 }
             }
         });
