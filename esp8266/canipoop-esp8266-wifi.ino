@@ -4,7 +4,7 @@
 
 #define FIREBASE_HOST "canipoop-4efd0.firebaseio.com"
 #define WIFI_SSID "farm-guest"
-#define WIFI_PASSWORD "FarmingRocks!"
+#define WIFI_PASSWORD "here"
 #define DOOR_DEBOUNCE_DELAY 75
 #define DOOR_PIN 4 // This is D2 on the ESP8266
 //#define MY_DEBUG
