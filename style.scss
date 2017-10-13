@@ -1,3 +1,6 @@
+$openColor: #4ae77e;
+$closedColor: #ff6552;
+
 html,
 body {
     width: 100%;
@@ -17,14 +20,22 @@ body {
     display: flex;
     border-right: 1px solid #333;
     background-color: lightgray;
+    border-bottom: 1px solid white;
+
+    &:last-child {
+      border-bottom: none;
+    }
 }
+
 .status {
     font-family: serif;
     text-align: center;
 }
 .isOpen {
-    background-color: #4ae77e;
+    background-color: $openColor;
+    border-color: scale-color($openColor, $lightness: 35%);
 }
 .isClosed {
-    background-color: #383063;
+    background-color: $closedColor;
+    border-color: scale-color($closedColor, $lightness: 35%);
 }
