@@ -1,12 +1,14 @@
 // WEMOS MINI
+
 #include <ESP8266WiFi.h>
 #include <FirebaseArduino.h>
 
 #define FIREBASE_HOST "canipoop-4efd0.firebaseio.com"
-#define WIFI_SSID "farm-guest"
-#define WIFI_PASSWORD "here"
+#define FIREBASE_AUTH ""
+#define WIFI_SSID ""
+#define WIFI_PASSWORD ""
 #define DOOR_DEBOUNCE_DELAY 75
-#define DOOR_PIN 4 // This is D2 on the ESP8266
+#define interruptPin 4 // This is D2 on the ESP8266
 //#define MY_DEBUG
 
 volatile boolean switchStatus = LOW;
@@ -15,9 +17,9 @@ const String DOOR_NUMBER = "2";
 
 void setup() {
   Serial.begin(9600);
-  pinMode(DOOR_PIN, INPUT_PULLUP);
+  pinMode(interruptPin, INPUT_PULLUP);
   connectToWifi();
-  Firebase.begin(FIREBASE_HOST);
+  Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
 }
 
 void loop() {
@@ -34,19 +36,15 @@ void loop() {
 
 void connectToWifi() {
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  
   #ifdef MY_DEBUG
   Serial.print("connecting");
   #endif
-
   while (WiFi.status() != WL_CONNECTED) {
     #ifdef MY_DEBUG
     Serial.print(".");
     #endif
-  
     delay(500);
   }
-  
   #ifdef MY_DEBUG
   Serial.println();
   Serial.print("connected: ");
@@ -55,7 +53,7 @@ void connectToWifi() {
 }
 
 boolean getSwitchStatus() {
-  return digitalRead(DOOR_PIN);
+  return digitalRead(interruptPin);
 }
 
 void statusChanged() {
