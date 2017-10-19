@@ -1,0 +1,14 @@
+{
+	"br1": {
+		"isOpen": 1,
+		"lastChange": 1508438930,
+		"lastUpdate": 1508438930,
+		"location": "Downstairs"
+	},
+	"br2": {
+		"isOpen": 0,
+		"lastChange": 1494440176,
+		"lastUpdate": 1494440176,
+		"location": "Upstairs"
+	}
+}
