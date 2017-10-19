@@ -17,21 +17,25 @@ type RoomInfo struct {
 	LastUpdate uint   `json:"lastUpdate,omitempty"`
 }
 
-type RoomInfoCallback func(room string, roomName string, roomInfo *RoomInfo)
+type RoomInfoCallback func(roomId string, roomName string, roomInfo *RoomInfo)
 
 type CanIPoop struct {
 	configuration Configuration
+	stop          chan bool
 }
 
 func NewCanIPoop(configuration Configuration) *CanIPoop {
-	return &CanIPoop{configuration: configuration}
+	return &CanIPoop{
+		configuration: configuration,
+		stop:          make(chan bool),
+	}
 }
 
 func (p *CanIPoop) Process(roomInfoCallback RoomInfoCallback) {
 	var wg sync.WaitGroup
 
-	for _, room := range p.configuration.GetRooms() {
-		p.watchRoom(room, &wg, roomInfoCallback)
+	for _, roomId := range p.configuration.GetRooms() {
+		p.watchRoom(roomId, &wg, roomInfoCallback)
 	}
 
 	wg.Wait()
@@ -39,14 +43,17 @@ func (p *CanIPoop) Process(roomInfoCallback RoomInfoCallback) {
 
 }
 
-func (p *CanIPoop) watchRoom(room string, wg *sync.WaitGroup, roomInfoCallback RoomInfoCallback) {
-	roomName := room
+func (p *CanIPoop) Stop() {
+	close(p.stop)
+}
+
+func (p *CanIPoop) watchRoom(roomId string, wg *sync.WaitGroup, roomInfoCallback RoomInfoCallback) {
+	roomName := roomId
 
 	wg.Add(1)
 	go func() {
-		stop := make(chan bool)
 		client := p.getFirebaseClient()
-		events, err := client.Child(room).Watch(roomInfoParser, stop)
+		events, err := client.Child(roomId).Watch(roomInfoParser, p.stop)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -62,7 +69,7 @@ func (p *CanIPoop) watchRoom(room string, wg *sync.WaitGroup, roomInfoCallback R
 				roomName = roomInfo.Location
 			}
 
-			roomInfoCallback(room, roomName, roomInfo)
+			roomInfoCallback(roomId, roomName, roomInfo)
 		}
 
 		fmt.Printf("Notifications have stopped")
