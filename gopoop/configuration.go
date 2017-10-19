@@ -1,4 +1,4 @@
-package main
+package gopoop
 
 import (
 	"github.com/namsral/flag"
@@ -11,7 +11,7 @@ type Configuration struct {
 	rooms         string
 }
 
-func getConfiguration() (config Configuration) {
+func GetFlagConfiguration() (config Configuration) {
 	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.PanicOnError)
 	flag.String(
 		flag.DefaultConfigFlagname,

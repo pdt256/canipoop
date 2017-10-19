@@ -1,16 +1,14 @@
-package main
+package gopoop
 
 import (
+	"sync"
 	"fmt"
 	"log"
-	"sync"
+	"strconv"
 	"encoding/json"
 
 	"github.com/ereyes01/firebase"
-	"strconv"
 )
-
-var configuration Configuration
 
 type RoomInfo struct {
 	Location   string `json:"location,omitempty"`
@@ -19,28 +17,35 @@ type RoomInfo struct {
 	LastUpdate uint   `json:"lastUpdate,omitempty"`
 }
 
-func main() {
-	configuration = getConfiguration()
+type RoomInfoCallback func(room string, roomName string, roomInfo *RoomInfo)
 
-	fmt.Printf("Are the rooms open?\n")
+type CanIPoop struct {
+	configuration Configuration
+}
 
+func NewCanIPoop(configuration Configuration) *CanIPoop {
+	return &CanIPoop{configuration: configuration}
+}
+
+func (p *CanIPoop) Process(roomInfoCallback RoomInfoCallback) {
 	var wg sync.WaitGroup
 
-	for _, room := range configuration.GetRooms() {
-		watchRoom(room, &wg)
+	for _, room := range p.configuration.GetRooms() {
+		p.watchRoom(room, &wg, roomInfoCallback)
 	}
 
 	wg.Wait()
 	fmt.Println(`Done`)
+
 }
 
-func watchRoom(room string, wg *sync.WaitGroup) {
+func (p *CanIPoop) watchRoom(room string, wg *sync.WaitGroup, roomInfoCallback RoomInfoCallback) {
 	roomName := room
 
 	wg.Add(1)
 	go func() {
 		stop := make(chan bool)
-		client := getFirebaseClient()
+		client := p.getFirebaseClient()
 		events, err := client.Child(room).Watch(roomInfoParser, stop)
 		if err != nil {
 			log.Fatal(err)
@@ -56,20 +61,13 @@ func watchRoom(room string, wg *sync.WaitGroup) {
 			if roomInfo.Location != `` {
 				roomName = roomInfo.Location
 			}
-			fmt.Printf("%s: %t\n", roomName, roomInfo.IsOpen)
+
+			roomInfoCallback(room, roomName, roomInfo)
 		}
 
 		fmt.Printf("Notifications have stopped")
 		wg.Done()
 	}()
-}
-
-func logEventError(event firebase.StreamEvent) {
-	if event.Error != nil {
-		log.Println(`Stream error:`, event.Error)
-	} else if event.UnmarshallerError != nil {
-		log.Println(`Malformed event:`, event.UnmarshallerError)
-	}
 }
 
 func roomInfoParser(path string, data []byte) (interface{}, error) {
@@ -89,7 +87,15 @@ func roomInfoParser(path string, data []byte) (interface{}, error) {
 	return roomInfo, err
 }
 
-func getFirebaseClient() firebase.Client {
-	url := fmt.Sprintf(`https://%s.firebaseio.com`, configuration.storageBucket)
+func logEventError(event firebase.StreamEvent) {
+	if event.Error != nil {
+		log.Println(`Stream error:`, event.Error)
+	} else if event.UnmarshallerError != nil {
+		log.Println(`Malformed event:`, event.UnmarshallerError)
+	}
+}
+
+func (p *CanIPoop) getFirebaseClient() firebase.Client {
+	url := fmt.Sprintf(`https://%s.firebaseio.com`, p.configuration.storageBucket)
 	return firebase.NewClient(url, "", nil)
 }
