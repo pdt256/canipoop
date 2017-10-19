@@ -27,7 +27,7 @@ func GetFlagConfiguration() (config Configuration) {
 	flag.StringVar(
 		&config.rooms,
 		`rooms`,
-		`office1/br1,office1/br2`,
+		`office1/br2,office1/br1`,
 		`room(s) location`,
 	)
 	flag.Parse()
